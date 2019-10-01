@@ -1,4 +1,11 @@
 {
-    "prefix" : "!",
-    "token" : "NjIzODE5MDkxMjY1OTc4MzY4.XYKWUA.t44MjVokoofnUx3CoPJU46C9VuQ"
+    "build-message" :
+    {
+        "onsucceed" : ":white_check_mark: BUILD SUCCESS :white_check_mark:",
+        "onfailed" : ":fire: BUILD FAILED :fire:"
+    },
+    "discord" : {
+        "webhook_url" : "https://discordapp.com/api/webhooks/624151597156532245/Ti5EM7aBKQRvZOcv517pRnyHHoqUqQJE1E2mut2SztNhnVGgmFjEl9poZVRQKKgcEXw3",
+        "name": ""
+    }
 }
