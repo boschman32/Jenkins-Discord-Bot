@@ -1,8 +1,8 @@
 const assert = require('assert');
 const https = require('https');
-const querystring = require('querystring');
 const fs = require('fs');
 
+//Arguments passed down by the user to the bot.
 class jenkins_arguments
 {
     constructor()
@@ -12,44 +12,17 @@ class jenkins_arguments
         this.builddetails = "";
     }
 }
-
-function construct_message(jenkinsArgs)
-{
-    try
-    {
-        var configData = JSON.parse(fs.readFileSync('config.json'));
-        var discord = new Discord(configData);
-        var message = new Message();
-        message.content = jenkinsArgs.content;
-        
-        if(jenkinsArgs.succession)
-        {
-            message.header = configData['build-message']['onsucceed'];
-        }
-        else
-        {
-            message.header = configData['build-message']['onfailed'];
-        }
-        message.footer = jenkinsArgs.builddetails;
-        message.color = 'FF0000';
-        discord.send(message);
-    }
-    catch(error)
-    {
-        assert(false, error);
-    }
-}
     
-//Discord
+//Discord data used by the webhook.
 class discord_data
 {
     constructor()
     {
         this.url = null;
-        this.name = null;
     }
 };
 
+//Message data to send to discord
 class Message
 {
     constructor()
@@ -58,6 +31,7 @@ class Message
         this.content = "";
         this.footer = "";
         this.color = 0xc8702a;
+        this.imageUrl = null;
     }
 }
 
@@ -67,16 +41,21 @@ class Discord
     {
         this.data = new discord_data();
         this.data.url = config['discord']['webhook_url'];
-        this.data.name = config['discord']['name'];
         this.webhook = new Webhook(this.data.url);
     }
 
+    //Send a message to discord using the webhook
     send(message)
     {
         if(this.webhook != null)
         {
-            var embed = new Embed(message.header, message.content, 0xc8702a);
+            var embed = new Embed(message.header, message.content, message.color);
             embed.set_footer(message.footer);
+
+            if(message.imageUrl != null)
+            {
+                embed.set_image(message.imageUrl);
+            }
 
             this.webhook.add_embed(embed);
             this.webhook.execute();
@@ -104,19 +83,23 @@ class Embed
         this.data["footer"]["text"] = text;
     };
 
-    // get data()
-    // {
-    //     return this.data;
-    // }
+    set_image(imageUrl)
+    {
+        this.data["image"] = 
+        {
+            "url" : imageUrl
+        }
+    }
 }
 
-//Webhook
+//Webhook used to connect to discord
 class Webhook
 {
     constructor(url)
     {
         this.url = url;
         this.data = {};
+        this.data["tts"] = false;
     }
 
     add_embed(embed)
@@ -125,6 +108,7 @@ class Webhook
         this.data["embeds"].push(embed.data);
     }
 
+    //Fire the webhook to discord with message JSON data.
     execute()
     {
         var postData = JSON.stringify(this.data);
@@ -164,7 +148,41 @@ class Webhook
     }
 }
 
-//Entry
+//Create a message using the jenkings command arguments
+function construct_message(jenkinsArgs)
+{
+    try
+    {
+        var configData = JSON.parse(fs.readFileSync('config.json'));
+        var discord = new Discord(configData);
+        var message = new Message();
+        message.content = jenkinsArgs.content;
+        
+        if(jenkinsArgs.succession)
+        {
+            var successMessage = configData['build-message']['onsucceed'];
+            message.header = successMessage['message'];
+            message.color = parseInt(successMessage['embed_color']);
+            message.imageUrl = successMessage['image_url']
+        }
+        else
+        {
+            var failedMessage = configData['build-message']['onfailed']
+            message.header = failedMessage['message'];
+            message.color = parseInt(failedMessage['embed_color'])
+            message.imageUrl = failedMessage['image_url']
+        }
+        message.footer = jenkinsArgs.builddetails;
+       
+        discord.send(message);
+    }
+    catch(error)
+    {
+        assert(false, error);
+    }
+}
+
+//Entry - start of bot
 var args = new jenkins_arguments();
 var succeeded = String(process.argv[2]);
 if(succeeded == 'true')

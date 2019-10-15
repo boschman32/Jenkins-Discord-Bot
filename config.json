@@ -1,11 +1,20 @@
 {
     "build-message" :
     {
-        "onsucceed" : ":white_check_mark: BUILD SUCCESS :white_check_mark:",
-        "onfailed" : ":fire: BUILD FAILED :fire:"
+        "onsucceed" : 
+        {
+            "message" : "",
+            "embed_color" : "0xFFFFFF",
+            "image_url" : ""
+        },
+        "onfailed" :
+        {
+            "message" : "",
+            "embed_color" : "0xFFFFFF",
+            "image_url" : ""
+        }
     },
     "discord" : {
-        "webhook_url" : "https://discordapp.com/api/webhooks/624151597156532245/Ti5EM7aBKQRvZOcv517pRnyHHoqUqQJE1E2mut2SztNhnVGgmFjEl9poZVRQKKgcEXw3",
-        "name": ""
+        "webhook_url" : ""
     }
 }
