@@ -1,18 +1,21 @@
 const assert = require('assert');
 const https = require('https');
 const fs = require('fs');
+const giphy = require('giphy-api')('JMkaAnrH3tu3QWbL2Cf7ci3fCQApJdUP');
+
+const BuildLevels = Object.freeze({"on_success":1, "on_success_unstable":2, "on_failed":3})
 
 //Arguments passed down by the user to the bot.
 class jenkins_arguments
 {
     constructor()
     {
-        this.succession = false;
+        this.build_level = BuildLevels.on_success;
+        this.giphy_keyword = "";
         this.content = "";
-        this.builddetails = "";
+        this.build_details = "";
     }
 }
-    
 //Discord data used by the webhook.
 class discord_data
 {
@@ -119,7 +122,7 @@ class Webhook
             method: 'POST',
             headers: 
             {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json',
                 'Content-Length': Buffer.byteLength(postData)
             }
         };
@@ -148,52 +151,80 @@ class Webhook
     }
 }
 
+function get_random_integer(max)
+{
+    return Math.floor(Math.random() * Math.floor(max));
+}
+
 //Create a message using the jenkings command arguments
-function construct_message(jenkinsArgs)
+function construct_message(jenkins_args)
 {
     try
     {
-        var configData = JSON.parse(fs.readFileSync('config.json'));
-        var discord = new Discord(configData);
+        var config_data = JSON.parse(fs.readFileSync('config.json'));
+        var discord = new Discord(config_data);
         var message = new Message();
-        message.content = jenkinsArgs.content;
+        message.content = jenkins_args.content;
         
-        if(jenkinsArgs.succession)
+        if(jenkins_args.build_level == BuildLevels.on_success)
         {
-            var successMessage = configData['build-message']['onsucceed'];
-            message.header = successMessage['message'];
-            message.color = parseInt(successMessage['embed_color']);
-            message.imageUrl = successMessage['image_url']
+            var success_message = config_data['build_message']['on_success'];
+            message.header = success_message['message'];
+            message.color = parseInt(success_message['embed_color']);
+        }
+        else if(jenkins_args.build_level == BuildLevels.on_success_unstable)
+        {
+            var success_message = config_data['build_message']['on_success_unstable'];
+            message.header = success_message['message'];
+            message.color = parseInt(success_message['embed_color']);
         }
         else
         {
-            var failedMessage = configData['build-message']['onfailed']
-            message.header = failedMessage['message'];
-            message.color = parseInt(failedMessage['embed_color'])
-            message.imageUrl = failedMessage['image_url']
+            var failed_message = config_data['build_message']['on_failed']
+            message.header = failed_message['message'];
+            message.color = parseInt(failed_message['embed_color'])
         }
-        message.footer = jenkinsArgs.builddetails;
+
+        message.footer = jenkins_args.build_details;
        
-        discord.send(message);
+        giphy.search({
+            q : jenkins_args.giphy_keyword,
+            limit : 50,
+            rating : 'r'
+        }, function(err, ress)
+        {
+            if(err != null)
+            {
+                console.log("Error { " + err.name +"} getting ghiphy image: " + err.message);
+            }
+            else
+            {
+                //message.imageUrl = ress.data.images.original.url;
+                if(ress.data.length > 0)
+                {
+                    message.imageUrl = ress.data[get_random_integer(ress.data.length - 1)].images.original.url;
+                }
+                else
+                {
+                    console.log("Couldn't find any images for phrase: "+ jenkins_args.giphyKeyword);
+                }
+            }
+            discord.send(message);
+        });
     }
     catch(error)
     {
         assert(false, error);
     }
 }
-
+    
 //Entry - start of bot
 var args = new jenkins_arguments();
-var succeeded = String(process.argv[2]);
-if(succeeded == 'true')
-{
-    args.succession = true;
-}
-else 
-{
-    args.succession = false;
-}
-args.content = String(process.argv[3]);
-args.builddetails = String(process.argv[4])
+var build_level = String(process.argv[2]);
+args.build_level = build_level;
+args.giphy_keyword = String(process.argv[3]);
+args.content = String(process.argv[4]);
+args.build_details = String(process.argv[5]);
+
 //Send the message to discord.
 construct_message(args);

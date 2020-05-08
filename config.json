@@ -1,20 +1,23 @@
 {
-    "build-message" :
+    "build_message" :
     {
-        "onsucceed" : 
+        "on_success" : 
         {
-            "message" : "",
-            "embed_color" : "0xFFFFFF",
-            "image_url" : ""
+            "message" : ":white_check_mark: BUILD SUCCESS :white_check_mark:",
+            "embed_color" : "0x00FF00"
         },
-        "onfailed" :
+        "on_success_unstable" :
         {
-            "message" : "",
-            "embed_color" : "0xFFFFFF",
-            "image_url" : ""
+            "message" : ":warning: BUILD UNSTABLE :warning:",
+            "embed_color" : "0xFFFF00"
+        },
+        "on_failed" :
+        {
+            "message" : ":fire: BUILD FAILED :fire:",
+            "embed_color" : "0xFF0000"
         }
     },
     "discord" : {
-        "webhook_url" : ""
+        "webhook_url" : "https://discordapp.com/api/webhooks/678989345159381004/NB0rRwa6bckWCM0S1fmm9Z6FV6BwuGR2a_2cir3ecaCdfOj70DjG6tzehaw0MY2cpk2q"
     }
 }
