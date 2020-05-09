@@ -1,7 +1,8 @@
 const assert = require('assert');
 const https = require('https');
 const fs = require('fs');
-const giphy = require('giphy-api')('JMkaAnrH3tu3QWbL2Cf7ci3fCQApJdUP');
+//Put giphy api key here if you want to use giphy support.
+const giphy = require('giphy-api')('');
 
 const BuildLevels = Object.freeze({"on_success":1, "on_success_unstable":2, "on_failed":3})
 
