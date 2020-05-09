@@ -11,6 +11,13 @@ A discord webhook "bot" that allows you to send message to discord from your jen
  **The bot supports:**
  - Giphy: place the giphy key inside config.json, uses: https://www.npmjs.com/package/giphy-api
  
+ **NOTE**
+ To use the bot you need to have the giphy-api installed to do so use:
+ ```
+ npm install giphy-api --save
+ ```
+ inside the root folder and you're ready to use the bot.
+ 
  ## How to setup
  Using config.json you can customize what the bot needs to send out to discord, each stage of a job has a seperate message where the message contains:
    - "header" is the message that will be send as the header/title of the discord message
