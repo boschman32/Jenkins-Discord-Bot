@@ -3,21 +3,26 @@
     {
         "on_success" : 
         {
-            "message" : ":white_check_mark: BUILD SUCCESS :white_check_mark:",
-            "embed_color" : "0x00FF00"
+            "header" : "",
+            "embed_color" : "0xFFFFFF"
         },
         "on_success_unstable" :
         {
-            "message" : ":warning: BUILD UNSTABLE :warning:",
-            "embed_color" : "0xFFFF00"
+            "header" : "",
+            "embed_color" : "0xFFFFFF"
         },
         "on_failed" :
         {
-            "message" : ":fire: BUILD FAILED :fire:",
-            "embed_color" : "0xFF0000"
+            "header" : "",
+            "embed_color" : "0xFFFFFF"
         }
     },
     "discord" : {
         "webhook_url" : ""
+    },
+    "giphy" : {
+        "key" : "",
+        "random_limit" : 50,
+        "rating" : "r"
     }
 }

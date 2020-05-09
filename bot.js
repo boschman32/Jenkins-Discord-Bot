@@ -1,8 +1,6 @@
 const assert = require('assert');
 const https = require('https');
 const fs = require('fs');
-//Put giphy api key here if you want to use giphy support.
-const giphy = require('giphy-api')('');
 
 const BuildLevels = Object.freeze({"on_success":1, "on_success_unstable":2, "on_failed":3})
 
@@ -160,62 +158,81 @@ function get_random_integer(max)
 //Create a message using the jenkings command arguments
 function construct_message(jenkins_args)
 {
-    try
-    {
-        var config_data = JSON.parse(fs.readFileSync('config.json'));
-        var discord = new Discord(config_data);
-        var message = new Message();
-        message.content = jenkins_args.content;
-        
-        if(jenkins_args.build_level == BuildLevels.on_success)
-        {
-            var success_message = config_data['build_message']['on_success'];
-            message.header = success_message['message'];
-            message.color = parseInt(success_message['embed_color']);
-        }
-        else if(jenkins_args.build_level == BuildLevels.on_success_unstable)
-        {
-            var success_message = config_data['build_message']['on_success_unstable'];
-            message.header = success_message['message'];
-            message.color = parseInt(success_message['embed_color']);
-        }
-        else
-        {
-            var failed_message = config_data['build_message']['on_failed']
-            message.header = failed_message['message'];
-            message.color = parseInt(failed_message['embed_color'])
-        }
+    var config_data = JSON.parse(fs.readFileSync('config.json'));
 
-        message.footer = jenkins_args.build_details;
-       
-        giphy.search({
-            q : jenkins_args.giphy_keyword,
-            limit : 50,
-            rating : 'r'
-        }, function(err, ress)
+    if(config_data['discord']['webhook_url'] == '')
+    {
+        console.error("Discord webhook url not set in config.json!")
+    }
+    else
+    {
+        try
         {
-            if(err != null)
+           
+            var discord = new Discord(config_data);
+            var message = new Message();
+            message.content = jenkins_args.content;
+            
+            if(jenkins_args.build_level == BuildLevels.on_success)
             {
-                console.log("Error { " + err.name +"} getting ghiphy image: " + err.message);
+                var success_message = config_data['build_message']['on_success'];
+                message.header = success_message['header'];
+                message.color = parseInt(success_message['embed_color']);
+            }
+            else if(jenkins_args.build_level == BuildLevels.on_success_unstable)
+            {
+                var success_message = config_data['build_message']['on_success_unstable'];
+                message.header = success_message['header'];
+                message.color = parseInt(success_message['embed_color']);
             }
             else
             {
-                //message.imageUrl = ress.data.images.original.url;
-                if(ress.data.length > 0)
-                {
-                    message.imageUrl = ress.data[get_random_integer(ress.data.length - 1)].images.original.url;
-                }
-                else
-                {
-                    console.log("Couldn't find any images for phrase: "+ jenkins_args.giphyKeyword);
-                }
+                var failed_message = config_data['build_message']['on_failed']
+                message.header = failed_message['header'];
+                message.color = parseInt(failed_message['embed_color'])
             }
-            discord.send(message);
-        });
-    }
-    catch(error)
-    {
-        assert(false, error);
+    
+            message.footer = jenkins_args.build_details;
+    
+            //Put giphy api key here if you want to use giphy support.
+            var giphy = require('giphy-api')(config_data['giphy']['key']);
+           
+            if(jenkins_args.giphy_keyword != '')
+            {
+                giphy.search({
+                    q : jenkins_args.giphy_keyword,
+                    limit : config_data['giphy']['random_limit'],
+                    rating : config_data['giphy']['rating']
+                }, function(err, ress)
+                {
+                    if(err != null || ress == null)
+                    {
+                        console.log("Error { " + err.name +"} getting ghiphy image: " + err.message);
+                    }
+                    else
+                    {
+                        if(ress.data != null && ress.data.length > 0)
+                        {
+                            message.imageUrl = ress.data[get_random_integer(ress.data.length - 1)].images.original.url;
+                        }
+                        else
+                        {
+                            console.log("Couldn't find any images for phrase: "+ jenkins_args.giphyKeyword);
+                        }
+                    }
+                    discord.send(message);
+                });
+            }
+            else
+            {
+                discord.send(message);
+            }
+            
+        }
+        catch(error)
+        {
+            assert(false, error);
+        }
     }
 }
     

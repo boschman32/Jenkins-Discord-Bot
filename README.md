@@ -9,12 +9,16 @@ A discord webhook "bot" that allows you to send message to discord from your jen
  A message will be send to discord through the use of an embed.
  
  **The bot supports:**
- - Giphy: place the giphy key inside bot.js
+ - Giphy: place the giphy key inside config.json, uses: https://www.npmjs.com/package/giphy-api
  
  ## How to setup
  Using config.json you can customize what the bot needs to send out to discord, each stage of a job has a seperate message where the message contains:
-   - "message" is the message that will be send as the header/title of the discord message
+   - "header" is the message that will be send as the header/title of the discord message
    - "embed_color" is the color of the embeded message
+   - "giphy"
+    - "key" the key used by your giphy dev account see https://developers.giphy.com/
+    - "random_limit" the amount of images giphy can choose from.
+    - "rating" the MPAA rating system to use when looking for images.
    
 The webhook for discord can also be set in the config.json using "webhook_url".
 
@@ -33,6 +37,5 @@ The .bat and the bot have 3 arguments you can set when calling the batch file:
 
 An example on how to call the batch file:
 ```Shell
-call SendMessageToDiscord.bat "1" "good job" "%CONFIGURATION%(%PLATFORM%) **%BUILD_KIND%** build has succeeded: %BUILD_URL%" "%JOB_BASE_NAME% 
+call SendMessageToDiscord.bat "1" "good job" "%CONFIGURATION%(%PLATFORM%) **%BUILD_KIND%** build has succeeded: %BUILD_URL%" "%JOB_BASE_NAME% (%BUILD_NUMBER%)"
 ```
- 
