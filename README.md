@@ -23,9 +23,9 @@ A discord webhook "bot" that allows you to send message to discord from your jen
    - "header" is the message that will be send as the header/title of the discord message
    - "embed_color" is the color of the embeded message
    - "giphy"
-    - "key" the key used by your giphy dev account see https://developers.giphy.com/
-    - "random_limit" the amount of images giphy can choose from.
-    - "rating" the MPAA rating system to use when looking for images.
+     - "key" the key used by your giphy dev account see https://developers.giphy.com/
+     - "random_limit" the amount of images giphy can choose from.
+     - "rating" the MPAA rating system to use when looking for images.
    
 The webhook for discord can also be set in the config.json using "webhook_url".
 
