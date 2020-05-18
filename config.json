@@ -15,7 +15,8 @@
         {
             "header" : "",
             "embed_color" : "0xFFFFFF"
-        }
+        },
+        "url" : ""
     },
     "discord" : {
         "webhook_url" : ""

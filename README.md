@@ -22,6 +22,7 @@ A discord webhook "bot" that allows you to send message to discord from your jen
  Using config.json you can customize what the bot needs to send out to discord, each stage of a job has a seperate message where the message contains:
    - "header" is the message that will be send as the header/title of the discord message
    - "embed_color" is the color of the embeded message
+   - "Url" is an url that will be 'attached' to the header text. If no URL is defined will not show a clickable link.
    - "giphy"
      - "key" the key used by your giphy dev account see https://developers.giphy.com/
      - "random_limit" the amount of images giphy can choose from.

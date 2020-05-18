@@ -34,6 +34,7 @@ class Message
         this.footer = "";
         this.color = 0xc8702a;
         this.imageUrl = null;
+        this.url = null;
     }
 }
 
@@ -51,7 +52,7 @@ class Discord
     {
         if(this.webhook != null)
         {
-            var embed = new Embed(message.header, message.content, message.color);
+            var embed = new Embed(message.header, message.content, message.color, message.url);
             embed.set_footer(message.footer);
 
             if(message.imageUrl != null)
@@ -71,12 +72,13 @@ class Discord
 
 class Embed
 {
-    constructor(title, description, color)
+    constructor(title, description, color, url)
     {
         this.data = {};
         this.data["title"] = title;
         this.data["description"] = description;
         this.data["color"] = color;
+        this.data["url"] = url;
     }
 
     set_footer(text) 
@@ -90,7 +92,7 @@ class Embed
         this.data["image"] = 
         {
             "url" : imageUrl
-        }
+        };
     }
 }
 
@@ -106,7 +108,7 @@ class Webhook
 
     add_embed(embed)
     {
-        this.data["embeds"] = []
+        this.data["embeds"] = [];
         this.data["embeds"].push(embed.data);
     }
 
@@ -162,7 +164,7 @@ function construct_message(jenkins_args)
 
     if(config_data['discord']['webhook_url'] == '')
     {
-        console.error("Discord webhook url not set in config.json!")
+        console.error("Discord webhook url not set in config.json!");
     }
     else
     {
@@ -187,11 +189,11 @@ function construct_message(jenkins_args)
             }
             else
             {
-                var failed_message = config_data['build_message']['on_failed']
+                var failed_message = config_data['build_message']['on_failed'];
                 message.header = failed_message['header'];
-                message.color = parseInt(failed_message['embed_color'])
+                message.color = parseInt(failed_message['embed_color']);
             }
-    
+            message.url = config_data['build_message']['url'];
             message.footer = jenkins_args.build_details;
     
             //Put giphy api key here if you want to use giphy support.
